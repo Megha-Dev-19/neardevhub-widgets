@@ -299,7 +299,7 @@ const fetchSnapshotHistory = () => {
         delete rfpData.ts;
         return rfpData;
       });
-      setSnapshotHistory(history);
+      setSnapshotHistory([...history].reverse());
     });
 };
 

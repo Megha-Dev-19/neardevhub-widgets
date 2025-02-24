@@ -92,11 +92,12 @@ State.init({
 function sortTimelineAndComments() {
   const comments = Social.index("comment", props.item, { subscribe: true });
 
-  if (state.changedKeysListWithValues === null) {
+  if (state.changedKeysListWithValues === null && snapshotHistory.length > 0) {
     const changedKeysListWithValues = snapshotHistory
       .slice(1)
       .map((item, index) => {
         const startingPoint = snapshotHistory[index]; // Set comparison to the previous item
+        delete startingPoint.block_height;
         return {
           editorId: item.editor_id,
           ...getDifferentKeysWithValues(startingPoint, item),
@@ -135,9 +136,11 @@ function sortTimelineAndComments() {
   });
 }
 
-if (Array.isArray(snapshotHistory)) {
-  sortTimelineAndComments();
-}
+useEffect(() => {
+  if (Array.isArray(snapshotHistory)) {
+    sortTimelineAndComments();
+  }
+}, [snapshotHistory]);
 
 const Comment = ({ commentItem }) => {
   const { accountId, blockHeight } = commentItem;
@@ -288,7 +291,10 @@ function parseTimelineKeyAndValue(timeline, originalValue, modifiedValue) {
 
 const AccountProfile = ({ accountId }) => {
   return (
-    <span className="inline-flex fw-bold text-black">
+    <span
+      className="inline-flex fw-bold text-black"
+      style={{ verticalAlign: "top" }}
+    >
       <Widget
         src={`${REPL_DEVHUB}/widget/devhub.entity.proposal.Profile`}
         props={{
@@ -326,6 +332,13 @@ const LinkToProposal = ({ id, children }) => {
   );
 };
 
+function formatDate(nanoseconds) {
+  const milliseconds = nanoseconds / 1_000_000; // Convert nanoseconds to milliseconds
+  const date = new Date(milliseconds);
+
+  return date.toISOString().split("T")[0];
+}
+
 const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
   switch (key) {
     case "name":
@@ -335,6 +348,13 @@ const parseProposalKeyAndValue = (key, modifiedValue, originalValue) => {
       return <span>changed {key}</span>;
     case "labels":
       return <span>changed labels to {(modifiedValue ?? []).join(", ")}</span>;
+    case "submission_deadline":
+      return (
+        <span>
+          changed submission deadline to {formatDate(modifiedValue)} to{" "}
+          {formatDate(originalValue)}{" "}
+        </span>
+      );
     case "linked_proposals": {
       const newProposals = modifiedValue || [];
       const oldProposals = originalValue || [];

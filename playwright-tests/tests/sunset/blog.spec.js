@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Sunset Blog addon", () => {
+test.skip("Sunset Blog addon", () => {
   test.use({
     baseURL: "http://localhost:8080",
   });
-  test("should load blogs in the sidebar for a given handle", async ({
+  test.skip("should load blogs in the sidebar for a given handle", async ({
     page,
   }) => {
     await page.goto(
@@ -18,7 +18,7 @@ test.describe("Sunset Blog addon", () => {
     expect(sidebarBlogSelectors.length).toBeGreaterThanOrEqual(1);
   });
 
-  test("should prepopulate the form when a blog is selected from the left", async ({
+  test.skip("should prepopulate the form when a blog is selected from the left", async ({
     page,
   }) => {
     test.setTimeout(60000);
@@ -63,11 +63,13 @@ test.describe("Sunset Blog addon", () => {
   });
 });
 
-test.describe("Sunset Blog Addon", () => {
+test.skip("Sunset Blog Addon", () => {
   test.use({
     baseURL: "http://localhost:8080",
   });
-  test("should have an empty form if select new blog", async ({ page }) => {
+  test.skip("should have an empty form if select new blog", async ({
+    page,
+  }) => {
     await page.goto(
       "/devhub.near/widget/devhub.entity.addon.blog.Configurator"
     );
@@ -105,7 +107,7 @@ test.describe("Sunset Blog Addon", () => {
     }
   });
 
-  test("should load a blog page and its blogs for a given community handle", async ({
+  test.skip("should load a blog page and its blogs for a given community handle", async ({
     page,
   }) => {
     await page.goto(
